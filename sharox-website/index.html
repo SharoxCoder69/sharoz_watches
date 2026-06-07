@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sharox Portal Final</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  color: white;
+  overflow-x: hidden;
+  height: 500vh;
+}
+
+/* SKY */
+#sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: black;
+}
+
+/* CURSOR */
+#cursor, #ring {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+#cursor {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+#ring {
+  width: 36px;
+  height: 36px;
+  border: 1px solid white;
+  border-radius: 50%;
+}
+
+/* SECTIONS */
+section {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+/* TEXT */
+.big {
+  font-size: 60px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+/* EXTRA SERVICES */
+#extra {
+  font-size: 32px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: 0.5s;
+}
+
+/* CONTACT */
+#contact {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.8s;
+}
+
+#contact.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ABOUT FIX */
+.about-box {
+  max-width: 800px;
+  padding: 20px;
+  text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+
+<canvas id="sky"></canvas>
+
+<div id="cursor"></div>
+<div id="ring"></div>
+
+<!-- ABOUT -->
+<section>
+  <div class="about-box">
+    <h1>ABOUT ME</h1>
+    <p>
+      My name is Sharox, a creative web designer and frontend developer.
+      I build modern cinematic websites with smooth animations.
+    </p>
+    <p>
+      I specialize in UI/UX design, frontend development and interactive experiences.
+    </p>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section>
+  <h1 id="services" class="big">SERVICES</h1>
+</section>
+
+<!-- EXTRA SERVICES -->
+<section>
+  <div id="extra">
+    <h1>WEB DESIGN</h1>
+    <h1>UI/UX</h1>
+    <h1>BRANDING</h1>
+  </div>
+</section>
+
+<!-- THUMBNAILS -->
+<section>
+  <h1 id="thumb" class="big">THUMBNAILS</h1>
+</section>
+
+<!-- CONTACT -->
+<div id="contact">
+  <h1>CONTACT</h1>
+  <p>Email: sharox@gmail.com</p>
+  <p>Phone: +92 03212148895</p>
+</div>
+
+<script>
+
+/* CURSOR */
+const cursor = document.getElementById("cursor");
+const ring = document.getElementById("ring");
+
+let mx=0,my=0,rx=0,ry=0;
+
+document.addEventListener("mousemove",(e)=>{
+  mx=e.clientX;
+  my=e.clientY;
+
+  cursor.style.left=mx+"px";
+  cursor.style.top=my+"px";
+});
+
+function move(){
+  rx+=(mx-rx)*0.12;
+  ry+=(my-ry)*0.12;
+  ring.style.left=rx+"px";
+  ring.style.top=ry+"px";
+  requestAnimationFrame(move);
+}
+move();
+
+/* SKY */
+const canvas=document.getElementById("sky");
+const ctx=canvas.getContext("2d");
+
+let w,h,stars=[];
+
+function resize(){
+  w=canvas.width=innerWidth;
+  h=canvas.height=innerHeight;
+}
+resize();
+addEventListener("resize",resize);
+
+function init(){
+  for(let i=0;i<220;i++){
+    stars.push({
+      x:Math.random()*w,
+      y:Math.random()*h,
+      r:Math.random()*1.4,
+      s:Math.random()*0.6+0.2
+    });
+  }
+}
+init();
+
+function draw(){
+  ctx.fillStyle="black";
+  ctx.fillRect(0,0,w,h);
+
+  for(let s of stars){
+    s.y+=s.s;
+    if(s.y>h){s.y=0;s.x=Math.random()*w;}
+
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle="white";
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* SCROLL */
+const services=document.getElementById("services");
+const extra=document.getElementById("extra");
+const thumb=document.getElementById("thumb");
+const contact=document.getElementById("contact");
+
+window.addEventListener("scroll",()=>{
+
+  const y=window.scrollY;
+  const h=window.innerHeight;
+
+  const p1=Math.min(1,y/h);
+  const p2=Math.min(1,(y-h)/h);
+  const p3=Math.min(1,(y-2*h)/h);
+  const p4=Math.min(1,(y-3*h)/h);
+
+  services.style.transform=`scale(${1+p1*6})`;
+  services.style.opacity=1-p1*0.7;
+
+  if(p2>0){
+    extra.style.opacity=p2;
+    extra.style.transform=`scale(${0.8+p2*0.5})`;
+  }
+
+  thumb.style.transform=`scale(${1+p3*6})`;
+  thumb.style.opacity=1-p3*0.7;
+
+  if(p4>0.2){
+    contact.classList.add("show");
+  } else {
+    contact.classList.remove("show");
+  }
+
+});
+
+</script>
+
+</body>
+</html>
